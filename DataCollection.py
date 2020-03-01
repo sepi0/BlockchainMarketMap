@@ -5,12 +5,13 @@ import re
 
 class DataCollection(object):
 
-    def __init__(self, url):
+    def __init__(self, name, url):
         self.url = url
+        self.name = name
         self.response = requests.get(url)
         self.soup = BeautifulSoup(self.response.text, 'html.parser')
-        self.data = self.soup.findAll("div", {"class": ""})
-        self.table = []
+        self.gather_data = self.soup.findAll("div", {"class": ""})
+        self.full_data = []
         self.dates_data = []
         self.ohlcvm_data = []
         self.open = []
@@ -20,9 +21,17 @@ class DataCollection(object):
         self.volume = []
         self.market_cap = []
 
-    #
-    def distribute_data(self):
-        for item in self.data:
+    def __len__(self):
+        return len(self.full_data)
+
+    def __repr__(self):
+        return '(Name: {!r}, Data: {!r})'.format(self.name, self.full_data)
+
+    def __str__(self):
+        return self.print_dictionary()
+
+    def generate_lists(self):
+        for item in self.gather_data:
             value = item.text
             if not re.search('[a-zA-Z!@#$%^&*]', value):
                 self.ohlcvm_data.append(value)
@@ -37,27 +46,25 @@ class DataCollection(object):
         self.market_cap = self.ohlcvm_data[5::6]
 
     def generate_dictionary(self):
+        self.ohlcvm_data.pop(0)
         for index in range(len(self.dates_data)):
-            self.table.append({"Date": self.dates_data[index],
-                               "Open": self.open[index],
-                               "High": self.high[index],
-                               "Low": self.low[index],
-                               "Close": self.close[index],
-                               "Volume": self.volume[index],
-                               "MarketCap": self.market_cap[index]})
+            self.full_data.append({
+                                "Date": self.dates_data[index],
+                                "Open": self.open[index],
+                                "High": self.high[index],
+                                "Low": self.low[index],
+                                "Close": self.close[index],
+                                "Volume": self.volume[index],
+                                "MarketCap": self.market_cap[index]})
 
     def print_dictionary(self):
-        for item in self.table:
+        for item in self.full_data:
             print(item)
 
 
-if __name__ == '__main__':
-    # tezos = DataCollection("https://coinmarketcap.com/currencies/tezos/historical-data/?start=20130429&end=20200301")
-    # tezos.distribute_data()
-    # tezos.generate_dictionary()
-    # tezos.print_dictionary()
-
-    bitcoin = DataCollection("https://coinmarketcap.com/currencies/bitcoin/historical-data/?start=20130429&end=20200301")
-    bitcoin.distribute_data()
-    bitcoin.generate_dictionary()
-    bitcoin.print_dictionary()
+# if __name__ == '__main__':
+#     tezos = DataCollection('Tezos', 'https://coinmarketcap.com/currencies/tezos/historical-data/?start=20130429&end=20200301')
+#     tezos.generate_lists()
+#     tezos.generate_dictionary()
+#     print(tezos.__repr__())
+#     print(tezos.__str__())
