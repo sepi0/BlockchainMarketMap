@@ -1,17 +1,19 @@
 from bs4 import BeautifulSoup
 import requests
 import re
-from timeit import default_timer as timer
 
 
 class DataCollection(object):
 
-    def __init__(self, name, url):
+    def __init__(self, name, url, element, attribute, value):
         self.url = url
         self.name = name
+        self.element = element
+        self.attribute = attribute
+        self.value = value
         self.response = requests.get(url)
         self.soup = BeautifulSoup(self.response.text, 'html.parser')
-        self.gather_data = self.soup.findAll("div", {"class": ""})
+        self.gather_data = self.soup.findAll(element, {attribute: value})
         self.full_data = []
         self.dates_data = []
         self.ohlcvm_data = []
@@ -61,9 +63,3 @@ class DataCollection(object):
     def print_dictionary(self):
         for item in self.full_data:
             print(item)
-
-
-if __name__ == '__main__':
-    tezos = DataCollection('Tezos', 'https://coinmarketcap.com/currencies/tezos/historical-data/?start=20130429&end=20200301')
-    tezos.generate_lists()
-    tezos.generate_dictionary()
