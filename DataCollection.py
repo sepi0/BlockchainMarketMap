@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 import re
+from timeit import default_timer as timer
 
 
 class DataCollection(object):
@@ -62,9 +63,7 @@ class DataCollection(object):
             print(item)
 
 
-# if __name__ == '__main__':
-#     tezos = DataCollection('Tezos', 'https://coinmarketcap.com/currencies/tezos/historical-data/?start=20130429&end=20200301')
-#     tezos.generate_lists()
-#     tezos.generate_dictionary()
-#     print(tezos.__repr__())
-#     print(tezos.__str__())
+if __name__ == '__main__':
+    tezos = DataCollection('Tezos', 'https://coinmarketcap.com/currencies/tezos/historical-data/?start=20130429&end=20200301')
+    tezos.generate_lists()
+    tezos.generate_dictionary()
